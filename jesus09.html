@@ -69,7 +69,7 @@
 
 
 
-    <title>HP y Rick & Morty</title>
+    <title>dragonball api</title>
     <style>
         :root {
             --color-primario: #e63946;
@@ -92,14 +92,8 @@
         header {
             padding: 15px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: flex-end;
             background-color: var(--color-cuarto);
-        }
-
-        header img {
-            width: 100px;
-            height: 50px;
         }
 
         .search {
@@ -150,16 +144,20 @@
         .personaje-info {
             color: var(--color-quinto);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: space-between;
             gap: 15px;
-            padding: 10px;
-            letter-spacing: 1px;
+            padding: 0.8px 15px 15px;
+            letter-spacing: 5px;
         }
 
         .personaje-info h3 {
             color: var(--color-primario);
+            margin-top: 0;
+        }
+
+        .personaje-info h1 {
+            color: var(--color-terceario);
             margin-top: 0;
         }
 
@@ -180,83 +178,135 @@
             transform: translateY(0);
         }
     </style>
-</head>
-<body>
 
-<header>
-    <img src="dbz2.jpg" alt="Logo">
-    <form id="form">
-        <input type="text" id="search" class="search" placeholder="Busca tu personaje">
-    </form>
-</header>
 
-<main id="main"></main>
+    <header>
+        <img src="rick.jpg" logo" style="width: auto" height="50px">
+        <form id="form">
+            <input type="text" id="search" class="search" placeholder="Busca en la API">
+        </form>
+    </header>
+    <main id="main"></main>
 
-<script>
-    const API_RICK = 'https://rickandmortyapi.com/api/character';
-    const API_HP = 'https://hp-api.onrender.com/api/characters';
 
-    const main = document.getElementById('main');
-    const form = document.getElementById('form');
-    const search = document.getElementById('search');
+    <script>
+        const API_HP = 'https://hp-api.onrender.com/api/characters';
+         const API_RICK = 'https://rickandmortyapi.com/api/character';
+          const main = document.getElementById('main');
+           const form = document.getElementById('form');
+            const search = document.getElementById('search');
 
-    let allCharacters = [];
 
-    async function getAllCharacters() {
-        const [rickRes, hpRes] = await Promise.all([
-            fetch(API_RICK).then(res => res.json()),
-            fetch(API_HP).then(res => res.json())
-        ]);
+        getAllCharacters();
+        async function getAllCharacters() {
+            const [rmRes, hpRes] = await Promise.all([
+               fetch(API_RICK).then(res => res.json()),
+                fetch(API_HP).then(res => res.json()),
+            ]);
+            const rickChars = rmRes.results || [];
+            const hpChars = hpRes || [];
 
-        const rickChars = rickRes.results || [];
-        const hpChars = hpRes.map(hpChar => ({
-            name: hpChar.name,
-            image: hpChar.image || 'https://via.placeholder.com/400',
-            status: 'Desconocido',
-            species: 'Mago/Muggle',
-            description: hpChar.actor ? `Interpretado por ${hpChar.actor}` : 'Sin descripción'
-        }));
 
-        allCharacters = [...rickChars, ...hpChars];
-        showCharacters(allCharacters);
-    }
+        showCharacters([...rickChars, ...hpChars]);
+        }
 
-    function showCharacters(characters) {
-        main.innerHTML = '';
+
+        function showCharacters(characters){
+            main.innerHTML = '';
+
 
         characters.forEach((char) => {
-            const name = char.name || 'Desconocido';
-            const image = char.image || 'https://via.placeholder.com/400';
-            const status = char.status || 'N/A';
-            const species = char.species || 'N/A';
-            const description = char.description || 'Sin descripción';
-
             const charElement = document.createElement('div');
-            charElement.classList.add('personaje');
-            charElement.innerHTML = `
+              charElement.classList.add('personaje');
+                if ('wand' in char) {
+                    const {
+                    id, name, alternate_names, species, gender, house, dateOfBirth, wizard, ancestry, eyeColour,
+                    hairColour, wand = {}, patronus, hogwartsStudent, hogwartsStaff, actor, alive, image
+                } = char;
+
+
+                const {wood = '', core = '', length = ''} = wand;
+
+
+        charElement.innerHTML = `
+        <div>
+        <h1>${name}</h1>
+        </div>
+         <br>
+         <img src="${image}" alt="${name}">
+         <div class="descripcion">
+           <table>
+             <tbody>
+              <tr><td>Alternate Names</td><td>${alternate_names}</td></tr>
+                <tr><td>Especie</td><td>${species}</td></tr>
+                  <tr><td>Genero</td><td>${gender}</td></tr>
+                   <tr><td>Casa</td><td>${house}</td></tr>
+                     <tr><td>Fecha de Nacimiento</td><td>${dateOfBirth}</td></tr>
+                      <tr><td>Mago</td><td>${wizard}</td></tr>
+                       <tr><td>Ascendencia</td><td>${ancestry}</td></tr>
+                        <tr><td>Color de Ojos</td><td>${eyeColour}</td></tr>
+                         <tr><td>Color de Cabello</td><td>${hairColour}</td></tr>
+
+
+                         
+           <td>Varita Mágica</td>
+            <td>
+             <ul>
+                <li>Madera: ${wood}</li>
+                <li>Núcleo: ${core}</li>
+                <li>Longitud: ${length}</li>
+             </ul>
+           </td>
+         </tr>
+                         <tr><td>Patrona</td><td>${patronus}</td></tr>
+                         <tr><td>Estudiante de Hogwarts</td><td>${hogwartsStudent}</td></tr>
+                         <tr><td>Personal de Hogwarts</td><td>${hogwartsStaff}</td></tr>
+                         <tr><td>Actor</td><td>${actor}</td></tr>
+                         <tr><td>Alive</td><td>${alive}</td></tr>
+              </tbody>
+             </table>
+         </div>
+                `;
+                }
+                else {
+                    const { id, name, status, species, gender, origin, location, image } = char;
+                charElement.innerHTML = `
+                <div>
+                    <h1>${name}</h1>
+                </div>
+                <br>
                 <img src="${image}" alt="${name}">
-                <div class="personaje-info">
-                    <h3>${name}</h3>
-                    <p>${species} - ${status}</p>
+                <div class="descripcion">
+                    <table>
+                        <tbody>
+                            <tr><td>Status</td><td>${status}</td></tr>
+                            <tr><td>Especie</td><td>${species}</td></tr>
+                            <tr><td>Genero</td><td>${gender}</td></tr>
+                            <tr><td>Origen</td><td>${origin.name}</td></tr>
+                            <tr><td>Ubicación</td><td>${location.name}</td></tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="overview">
-                    <h3>Descripción</h3>
-                    <p>${description}</p>
-                </div>
-            `;
-            main.appendChild(charElement);
-        });
-    }
+                `;
+                }
+                main.appendChild(charElement);
+                });}
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const searchTerm = search.value.toLowerCase();
-        const filtered = allCharacters.filter(c => c.name.toLowerCase().includes(searchTerm));
-        showCharacters(filtered);
-    });
 
-    getAllCharacters();
-</script>
+               
+               
 
+
+
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault()
+                const searchTerm = search.value.toLowerCase();
+                if(searchTerm && searchTerm !== ''){
+                    getAllCharacters(API_HP + `?name=${searchTerm}`)
+                    search.value='';
+                }else{window.location.reload();}
+            })
+    </script>
 </body>
 </html>
